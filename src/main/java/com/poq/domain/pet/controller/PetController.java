@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.UUID;
 import jakarta.validation.Valid;
 
 @RestController
@@ -18,13 +19,13 @@ public class PetController {
     private final PetService petService;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<String>> registerPet(@Valid @RequestBody PetRegisterRequest request) {
-        Long petId = petService.registerPet(request);
-        return ResponseEntity.ok(ApiResponse.success("반려동물 등록 성공! 펫 ID: " + petId));
+    public ResponseEntity<ApiResponse<UUID>> registerPet(@Valid @RequestBody PetRegisterRequest request) {
+        UUID petId = petService.registerPet(request);
+        return ResponseEntity.ok(ApiResponse.success(petId));
     }
 
     @GetMapping("/owner/{userId}")
-    public ResponseEntity<ApiResponse<List<PetResponse>>> getMyPets(@PathVariable("userId") Long userId) {
+    public ResponseEntity<ApiResponse<List<PetResponse>>> getMyPets(@PathVariable("userId") UUID userId) {
         List<com.poq.domain.pet.entity.Pet> pets = petService.getPetsByUserId(userId);
         
         List<PetResponse> response = pets.stream()
@@ -33,5 +34,4 @@ public class PetController {
                 
         return ResponseEntity.ok(ApiResponse.success(response));
     }
-
 }

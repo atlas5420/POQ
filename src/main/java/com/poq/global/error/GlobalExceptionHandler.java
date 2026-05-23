@@ -12,10 +12,11 @@ public class GlobalExceptionHandler {
     // 1. DTO 유효성 검증(@Valid) 실패 예외를 가로채서 핵심만 필터링
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Void>> handleValidationException(MethodArgumentNotValidException e) {
-        String errorMessage = e.getBindingResult()
-                               .getFieldError()
-                               .getDefaultMessage();
-        
+        var fieldError = e.getBindingResult().getFieldError();
+        String errorMessage = (fieldError != null)
+                ? fieldError.getDefaultMessage()
+                : "입력값 유효성 검증에 실패했습니다.";
+
         return ResponseEntity
                 .badRequest()
                 .body(ApiResponse.fail(errorMessage));

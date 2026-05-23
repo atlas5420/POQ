@@ -5,8 +5,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AccessLevel;
+import lombok.Builder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "pets")
@@ -15,35 +17,51 @@ import java.time.LocalDateTime;
 public class Pet {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // 💡 오타 수정 완료
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(length = 50)
-    private String type;
+    @Column(nullable = false, length = 50)
+    private String species; // 강아지, 고양이 등
 
-    @Column(length = 50)
+    @Column(length = 100)
     private String breed;
 
-    @Column(name = "birth_date")
-    private LocalDate birthDate; // 표준 LocalDate 사용
+    @Column(name = "birthday")
+    private LocalDate birthday;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "adoption_day")
+    private LocalDate adoptionDay;
+
+    @Column(length = 10)
+    private String gender;
+
+    @Column(name = "photo_url", length = 500)
+    private String photoUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String notes;
+
+    @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
-    // 💡 잘려있던 생성자 매개변수와 내부 대입문 완벽 복구
-    public Pet(User user, String name, String type, String breed, LocalDate birthDate) {
+    @Builder
+    public Pet(User user, String name, String species, String breed, LocalDate birthday, LocalDate adoptionDay, String gender, String photoUrl, String notes) {
         this.user = user;
         this.name = name;
-        this.type = type;
+        this.species = species;
         this.breed = breed;
-        this.birthDate = birthDate;
+        this.birthday = birthday;
+        this.adoptionDay = adoptionDay;
+        this.gender = gender;
+        this.photoUrl = photoUrl;
+        this.notes = notes;
         this.createdAt = LocalDateTime.now();
     }
 }
